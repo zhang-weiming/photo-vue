@@ -1,7 +1,9 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <img alt="Vue logo" src="../assets/logo.png" /> <br />
+    <router-link tag="a" target="_blank" to="/about">
+      <el-button>新建相框</el-button>
+    </router-link>
   </div>
 </template>
 
@@ -11,8 +13,6 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
 export default Vue.extend({
   name: "Home",
-  components: {
-    HelloWorld
-  }
+  components: {},
 });
 </script>
