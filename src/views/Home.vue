@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" /> <br />
-    <router-link tag="a" target="_blank" to="/about">
+    <router-link tag="a" target="_blank" to="/photo">
       <el-button>新建相框</el-button>
     </router-link>
   </div>
@@ -9,10 +9,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+// import TitleBar from "@/components/TitleBar.vue";
+// import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
 export default Vue.extend({
   name: "Home",
-  components: {},
+  components: {
+    // TitleBar
+  },
 });
 </script>
+
+<style lang="scss">
+</style>
