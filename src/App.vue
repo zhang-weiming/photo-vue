@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <title-bar />
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link tag="a" target="_blank" to="/about">
@@ -10,17 +9,6 @@
     <router-view />
   </div>
 </template>
-
-<script lang="ts">
-import Vue from "vue";
-import TitleBar from "@/components/TitleBar.vue";
-
-export default Vue.extend({
-  components: {
-    TitleBar
-  },
-});
-</script>
 
 <style lang="scss">
 #app {

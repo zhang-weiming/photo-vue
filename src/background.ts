@@ -1,21 +1,24 @@
 "use strict";
-
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, ipcMain, BrowserWindow, Menu, Tray } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
+import path from 'path';
+
+declare const __static: string;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } }
 ]);
 
+let mainWin: BrowserWindow | null = null;
+
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  mainWin = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -26,14 +29,43 @@ async function createWindow() {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    await mainWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+    if (!process.env.IS_TEST) mainWin.webContents.openDevTools();
   } else {
     createProtocol("app");
     // win.setMenu(null);
     // Load the index.html when not in development
-    win.loadURL("app://./index.html");
+    mainWin.loadURL("app://./index.html");
   }
+
+  // mainWin.on('close', (event) => {
+  //   event.preventDefault();
+  //   mainWin?.hide();
+  // });
+}
+
+let tray = null;
+let iconPath = null;
+
+function createTray() {
+  const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png';
+  iconPath = path.join(__static, 'img/icons', iconName);
+  tray = new Tray(iconPath);
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '主页',
+      click: function(){
+        createWindow();
+      }
+    }, {
+      label: '退出',
+      click: function(){
+        app.quit();
+      }
+    }
+  ]);
+  tray.setToolTip('Photo');
+  tray.setContextMenu(contextMenu);
 }
 
 // Quit when all windows are closed.
@@ -63,7 +95,9 @@ app.on("ready", async () => {
       console.error("Vue Devtools failed to install:", e.toString());
     }
   }
+
   createWindow();
+  createTray();
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -80,3 +114,37 @@ if (isDevelopment) {
     });
   }
 }
+
+// create the listener
+ipcMain.on('load-photo-window', async (event, data) => {
+  // create the window
+  let photo = new BrowserWindow({ show: true,
+    width: 600,
+    height: 600,
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      plugins: true
+    },
+  });
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    await photo.loadURL(process.env.WEBPACK_DEV_SERVER_URL + "photo");
+    // if (!process.env.IS_TEST) photo.webContents.openDevTools();
+  } else {
+    createProtocol("app");
+    // win.setMenu(null);
+    // Load the index.html when not in development
+    photo.loadURL("app://./photo.html");
+  }
+
+  // photo.on('closed', () => {
+  //   photo = null;
+  // });
+
+  // // here we can send the data to the new window
+  // photo.webContents.on('did-finish-load', () => {
+  //   photo.webContents.send('data', data);
+  // });
+});

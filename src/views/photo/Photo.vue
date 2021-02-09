@@ -30,23 +30,23 @@ export default Vue.extend({
   beforeMount: async function () {
     this.setWindowSize();
   },
-  mounted () {
-    const that = this;
-    window.onresize = function() {
-      const ratio = that.getPhotoSizeRatio();
-      const currRatio = window.innerWidth / window.innerHeight;
-      if (currRatio == ratio) return;
-      else if (currRatio < ratio) {
-        // width changed, need to update height
-        const newHeight = window.innerWidth / ratio;
-        window.resizeTo(window.innerWidth, newHeight);
-      }
-      else {
-        const newWidth = window.innerHeight * ratio;
-        window.resizeTo(newWidth, window.innerHeight);
-      }
-    };
-  },
+  // mounted () {
+  //   const that = this;
+  //   window.onresize = function() {
+  //     const ratio = that.getPhotoSizeRatio();
+  //     const currRatio = window.innerWidth / window.innerHeight;
+  //     if (currRatio == ratio) return;
+  //     else if (currRatio < ratio) {
+  //       // width changed, need to update height
+  //       const newHeight = window.innerWidth / ratio;
+  //       window.resizeTo(window.innerWidth, newHeight);
+  //     }
+  //     else {
+  //       const newWidth = window.innerHeight * ratio;
+  //       window.resizeTo(newWidth, window.innerHeight);
+  //     }
+  //   };
+  // },
   methods: {
     setWindowSize: async function () {
       const that = this;
@@ -109,13 +109,13 @@ export default Vue.extend({
   backdrop-filter: blur(5px);
 
   .delete-btn {
-    display: inline-block;
+    display: inline-block !important;
     // margin-top: 10px;
   }
 }
 
 .delete-btn {
-  display: none;
+  display: none !important;
   margin-top: 10px;
   font-size: 25px;
   color: brown;
