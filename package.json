@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "lint": "vue-cli-service lint",
-    "build": "vue-cli-service electron:build",
     "serve": "vue-cli-service electron:serve",
+    "build": "vue-cli-service electron:build",
+    "build-win32": "vue-cli-service electron:build --win --ia32",
+    "build-win64": "vue-cli-service electron:build --win --x64",
+    "build-mac": "vue-cli-service electron:build --mac",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
