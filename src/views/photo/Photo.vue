@@ -20,7 +20,7 @@ import { remote } from "electron";
 const dialog = remote.dialog;
 
 export default Vue.extend({
-  name: "About",
+  name: "Photo",
   components: {},
   data: function () {
     return {
@@ -30,37 +30,24 @@ export default Vue.extend({
         w: 300,
         h: 300,
       },
+      photoSizeRatio: 1.0,
       loading: true,
     };
   },
-  beforeMount: async function () {
-    // this.setWindowSize();
-    this.setWindowSizeDefault();
-  },
   mounted () {
     this.pickPhoto();
-    // const that = this;
-    // window.onresize = function() {
-    //   const ratio = that.getPhotoSizeRatio();
-    //   const currRatio = window.innerWidth / window.innerHeight;
-    //   if (currRatio == ratio) return;
-    //   else if (currRatio < ratio) {
-    //     // width changed, need to update height
-    //     const newHeight = window.innerWidth / ratio;
-    //     window.resizeTo(window.innerWidth, newHeight);
-    //   }
-    //   else {
-    //     const newWidth = window.innerHeight * ratio;
-    //     window.resizeTo(newWidth, window.innerHeight);
-    //   }
-    // };
+    this.setWindowSize();
+    this.setResizeEvent();
   },
   methods: {
     closeWindow: function() {
       window.close();
     },
-    getPhotoSizeRatio () {
-      return this.photoSize.w / this.photoSize.h;
+    setPhotoSizeRatio (w: number, h: number) {
+      this.photoSizeRatio = w / h;
+    },
+    currentWindow() {
+      return remote.getCurrentWindow();
     },
     pickPhoto: async function() {
       const result = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
@@ -77,25 +64,29 @@ export default Vue.extend({
         this.loading = false;
       }
     },
-    setWindowSizeDefault () {
-      window.resizeTo(600, 400);
+    setResizeEvent() {
+      const that = this;
+      remote.getCurrentWindow().on("will-resize", function(event, newSize) {
+        event.preventDefault();
+        event.sender.setSize(newSize.width, Math.round(newSize.width / that.photoSizeRatio));
+      });
     },
     setWindowSize: async function () {
       const that = this;
       const img = new Image();
       img.src = this.photoPath;
-      img.onload = function () {
+      img.onload = async function () {
         that.setPhotoSize(img.width, img.height);
+        that.setPhotoSizeRatio(img.width, img.height);
         
-        const ratio = that.getPhotoSizeRatio();
-        let width = 600;
-        let height = width / ratio;
-        if (height > 600) {
-          height = 600;
-          width = height * ratio;
+        let width = 400;
+        let height = Math.round(width / that.photoSizeRatio);
+        if (height > 400) {
+          height = 400;
+          width = Math.round(height * that.photoSizeRatio);
         }
 
-        window.resizeTo(width, height);
+        remote.getCurrentWindow().setSize(width, height);
       };
     },
     setPhotoSize: function (w: number, h: number) {

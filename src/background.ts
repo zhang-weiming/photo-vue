@@ -17,8 +17,8 @@ let mainWin: BrowserWindow | null = null;
 async function createWindow() {
   // Create the browser window.
   mainWin = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 600,
+    height: 400,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -30,7 +30,7 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await mainWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-    if (!process.env.IS_TEST) mainWin.webContents.openDevTools();
+    // if (!process.env.IS_TEST) mainWin.webContents.openDevTools();
   } else {
     createProtocol("app");
     // win.setMenu(null);
@@ -135,8 +135,8 @@ if (isDevelopment) {
 ipcMain.on('load-photo-window', async (event, data) => {
   // create the window
   let photo = new BrowserWindow({ show: true,
-    width: 600,
-    height: 600,
+    width: 400,
+    height: 400,
     frame: false,
     webPreferences: {
       nodeIntegration: true,
@@ -147,7 +147,7 @@ ipcMain.on('load-photo-window', async (event, data) => {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await photo.loadURL(process.env.WEBPACK_DEV_SERVER_URL + "photo");
-    if (!process.env.IS_TEST) photo.webContents.openDevTools();
+    // if (!process.env.IS_TEST) photo.webContents.openDevTools();
   } else {
     createProtocol("app");
     // win.setMenu(null);
