@@ -1,12 +1,14 @@
 <template>
   <div class="photo">
+    <div class="loading-icon-group" v-if="loading">
+      <i class="el-icon-picture-outline"></i>
+    </div>
     <div class="close-group">
       <i class="el-icon-delete delete-btn" @click="closeWindow"></i>
     </div>
     <img
       id="photo-img"
       class="img-responsive"
-      alt="Your photo"
       :src="photoPath"
     />
   </div>
@@ -14,40 +16,70 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { remote } from "electron";
+const dialog = remote.dialog;
+
 export default Vue.extend({
   name: "About",
   components: {},
   data: function () {
     return {
-      photoPath:
-        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      photoPath: "",
+      // photoPath: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       photoSize: {
         w: 300,
         h: 300,
       },
+      loading: true,
     };
   },
   beforeMount: async function () {
-    this.setWindowSize();
+    // this.setWindowSize();
+    this.setWindowSizeDefault();
   },
-  // mounted () {
-  //   const that = this;
-  //   window.onresize = function() {
-  //     const ratio = that.getPhotoSizeRatio();
-  //     const currRatio = window.innerWidth / window.innerHeight;
-  //     if (currRatio == ratio) return;
-  //     else if (currRatio < ratio) {
-  //       // width changed, need to update height
-  //       const newHeight = window.innerWidth / ratio;
-  //       window.resizeTo(window.innerWidth, newHeight);
-  //     }
-  //     else {
-  //       const newWidth = window.innerHeight * ratio;
-  //       window.resizeTo(newWidth, window.innerHeight);
-  //     }
-  //   };
-  // },
+  mounted () {
+    this.pickPhoto();
+    // const that = this;
+    // window.onresize = function() {
+    //   const ratio = that.getPhotoSizeRatio();
+    //   const currRatio = window.innerWidth / window.innerHeight;
+    //   if (currRatio == ratio) return;
+    //   else if (currRatio < ratio) {
+    //     // width changed, need to update height
+    //     const newHeight = window.innerWidth / ratio;
+    //     window.resizeTo(window.innerWidth, newHeight);
+    //   }
+    //   else {
+    //     const newWidth = window.innerHeight * ratio;
+    //     window.resizeTo(newWidth, window.innerHeight);
+    //   }
+    // };
+  },
   methods: {
+    closeWindow: function() {
+      window.close();
+    },
+    getPhotoSizeRatio () {
+      return this.photoSize.w / this.photoSize.h;
+    },
+    pickPhoto: async function() {
+      const result = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
+        properties: ["openFile"],
+        filters: [
+            { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif'] }
+        ]
+      });
+      if (null == result || 0 == result.length)
+        this.closeWindow();
+      if (typeof result === "object") {
+        const imgPath = result[0].replace(/\\/g,"/");
+        this.photoPath = "local-resource://" + imgPath;
+        this.loading = false;
+      }
+    },
+    setWindowSizeDefault () {
+      window.resizeTo(600, 400);
+    },
     setWindowSize: async function () {
       const that = this;
       const img = new Image();
@@ -70,21 +102,11 @@ export default Vue.extend({
       this.photoSize.w = w;
       this.photoSize.h = h;
     },
-    closeWindow: function() {
-      window.close();
-    },
-    getPhotoSizeRatio () {
-      return this.photoSize.w / this.photoSize.h;
-    },
   },
 });
 </script>
 
 <style lang="scss">
-#titlebar-btn-group {
-  display: none;
-}
-
 ::-webkit-scrollbar {
   width: 0 !important;
 }
@@ -124,6 +146,16 @@ export default Vue.extend({
 .img-responsive {
   display: inline-block;
   height: auto;
-  max-width: 100%;
+  width: 100%;
+}
+
+.loading-icon-group {
+  position: absolute;
+  width: 100%;
+  height: 400px;
+  text-align: center;
+  font-size: 50px;
+  color: #8aba87;
+  padding-top: 175px;
 }
 </style>

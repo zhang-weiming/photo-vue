@@ -22,8 +22,8 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: (process.env
-        .ELECTRON_NODE_INTEGRATION as unknown) as boolean
+      nodeIntegration: true,
+      enableRemoteModule: true,
     }
   });
 
@@ -68,6 +68,20 @@ function createTray() {
   tray.setContextMenu(contextMenu);
 }
 
+function registerLocalResourceProtocol() {
+  protocol.registerFileProtocol('local-resource', (request, callback) => {
+    const url = request.url.replace(/^local-resource:\/\//, '')
+    // Decode URL to prevent errors when loading filenames with UTF-8 chars or chars like "#"
+    const decodedUrl = decodeURI(url) // Needed in case URL contains spaces
+    try {
+      return callback(decodedUrl)
+    }
+    catch (error) {
+      console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
+    }
+  })
+}
+
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
@@ -95,6 +109,8 @@ app.on("ready", async () => {
       console.error("Vue Devtools failed to install:", e.toString());
     }
   }
+
+  registerLocalResourceProtocol();
 
   createWindow();
   createTray();
@@ -124,14 +140,14 @@ ipcMain.on('load-photo-window', async (event, data) => {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
-      plugins: true
+      enableRemoteModule: true,
     },
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await photo.loadURL(process.env.WEBPACK_DEV_SERVER_URL + "photo");
-    // if (!process.env.IS_TEST) photo.webContents.openDevTools();
+    if (!process.env.IS_TEST) photo.webContents.openDevTools();
   } else {
     createProtocol("app");
     // win.setMenu(null);
