@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" /> <br />
+    <img alt="Vue logo" src="@/assets/logo.png" /> <br />
     <!-- <router-link tag="a" target="_blank" to="/photo">
       <el-button>新建相框</el-button>
     </router-link> -->
@@ -28,4 +28,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+.home {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 </style>

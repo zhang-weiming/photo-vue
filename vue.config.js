@@ -18,7 +18,7 @@ module.exports = {
 //       .set('components', resolve('src/components'));
 //   },
   pages: {
-    index: 'src/main.ts', // your main window
+    index: 'src/views/main/main.ts', // your main window
     photo: 'src/views/photo/main.ts' // your video window
   },
   pluginOptions: {
