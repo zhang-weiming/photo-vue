@@ -68,7 +68,7 @@ export default Vue.extend({
       const that = this;
       remote.getCurrentWindow().on("will-resize", function(event, newSize) {
         event.preventDefault();
-        event.sender.setSize(newSize.width, Math.round(newSize.width / that.photoSizeRatio));
+        remote.getCurrentWindow().setSize(newSize.width, Math.round(newSize.width / that.photoSizeRatio));
       });
     },
     setWindowSize: async function () {
