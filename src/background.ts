@@ -57,12 +57,15 @@ function createTray() {
       click: function(){
         createWindow();
       }
-    }, {
-      label: '退出',
-      click: function(){
-        app.quit();
-      }
-    }
+    }, 
+    {type: "separator"},
+    {role: "quit"},
+    // {
+    //   label: '退出',
+    //   click: function(){
+    //     app.quit();
+    //   }
+    // }
   ]);
   tray.setToolTip('Photo');
   tray.setContextMenu(contextMenu);
