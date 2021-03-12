@@ -10,6 +10,7 @@
       id="photo-img"
       class="img-responsive"
       :src="photoPath"
+      :width="photoWidth"
     />
   </div>
 </template>
@@ -30,6 +31,8 @@ export default Vue.extend({
         w: 300,
         h: 300,
       },
+      photoWidth: 300,
+      photoHeight: 300,
       photoSizeRatio: 1.0,
       loading: true,
     };
@@ -68,7 +71,18 @@ export default Vue.extend({
       const that = this;
       remote.getCurrentWindow().on("will-resize", function(event, newSize) {
         event.preventDefault();
-        remote.getCurrentWindow().setSize(newSize.width, Math.round(newSize.width / that.photoSizeRatio));
+        if (newSize.width != that.photoWidth) {
+          const w = newSize.width;
+          const h = Math.round(newSize.width / that.photoSizeRatio);
+          that.setPhotoSize(w, h);
+          remote.getCurrentWindow().setSize(w, h);
+        }
+        else {
+          const w = Math.round(newSize.height * that.photoSizeRatio);
+          const h = newSize.height;
+          that.setPhotoSize(w, h);
+          remote.getCurrentWindow().setSize(w, h);
+        }
       });
     },
     setWindowSize: async function () {
@@ -86,12 +100,15 @@ export default Vue.extend({
           width = Math.round(height * that.photoSizeRatio);
         }
 
+        that.setPhotoSize(width, height);
         remote.getCurrentWindow().setSize(width, height);
       };
     },
     setPhotoSize: function (w: number, h: number) {
       this.photoSize.w = w;
       this.photoSize.h = h;
+      this.photoWidth = w;
+      this.photoHeight = h;
     },
   },
 });
